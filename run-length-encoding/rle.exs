@@ -7,12 +7,48 @@ defmodule RunLengthEncoder do
   "2A3B4C" => "AABBBCCCC"
   """
   @spec encode(String.t) :: String.t
+  def encode(""), do: ""
   def encode(string) do
-
+    string
+    |> String.graphemes
+    |> count_consecutive
+    |> Enum.join
   end
 
   @spec decode(String.t) :: String.t
+  def decode(""), do: ""
   def decode(string) do
+    expand_consecutive(string)
+  end
 
+  defp count_consecutive([char | charlist]) do
+    count_consecutive(charlist, char, 1, [])
+  end
+  defp count_consecutive([], current, 1, acc), do: acc ++ [current]
+  defp count_consecutive([], current, count, acc) do
+    acc ++ ["#{count}#{current}"]
+  end
+  defp count_consecutive([char | charlist], current, count, acc) do
+    cond do
+      char == current ->
+        count_consecutive(charlist, current, count + 1, acc)
+      count == 1 ->
+        count_consecutive(charlist, char, 1, acc ++ [current])
+      true ->
+        count_consecutive(charlist, char, 1, acc ++ ["#{count}#{current}"])
+    end
+  end
+
+  defp expand_consecutive(string), do: expand_consecutive(string, "")
+  defp expand_consecutive("", expanded), do: expanded
+  defp expand_consecutive(string, expanded) do
+    [whole, number, letter] = Regex.run(~r/^(\d+)?(.)/, string)
+    {_, remaining} = String.split_at(string, String.length(whole))
+    if (number == "") do
+      expand_consecutive(remaining, expanded <> letter)
+    else
+      number = String.to_integer(number)
+      expand_consecutive(remaining, expanded <> String.duplicate(letter, number))
+    end
   end
 end
