@@ -10,7 +10,7 @@ defmodule School do
   """
   @spec add(map, String.t, integer) :: map
   def add(db, name, grade) do
-
+    Map.update(db, grade, [name], &(Enum.sort([name | &1])))
   end
 
   @doc """
@@ -18,7 +18,7 @@ defmodule School do
   """
   @spec grade(map, integer) :: [String.t]
   def grade(db, grade) do
-
+    Map.get(db, grade, [])
   end
 
   @doc """
@@ -26,6 +26,10 @@ defmodule School do
   """
   @spec sort(map) :: [{integer, [String.t]}]
   def sort(db) do
-
+    db
+    |> Map.to_list
+    |> Enum.sort(fn({grade1, _}, {grade2, _}) ->
+      grade1 < grade2
+    end)
   end
 end
