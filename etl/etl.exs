@@ -9,6 +9,13 @@ defmodule ETL do
   """
   @spec transform(map) :: map
   def transform(input) do
+    input
+    |> Enum.map(fn({k, v}) -> expand(v, k) end)
+    |> Enum.reduce(&Map.merge/2)
+  end
 
+  def expand([], _value), do: %{}
+  def expand([word | words], value) do
+    Map.merge(%{String.downcase(word) => value}, expand(words, value))
   end
 end
