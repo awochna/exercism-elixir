@@ -13,7 +13,15 @@ defmodule FlattenArray do
   """
 
   @spec flatten(list) :: list
-  def flatten(list) do
-
+  def flatten(list, tail \\ [])
+  def flatten([], tail), do: tail
+  def flatten([h | t], tail) when h == nil do
+    flatten(t, tail)
+  end
+  def flatten([h | t], tail) when is_list(h) do
+    flatten(h, flatten(t, tail))
+  end
+  def flatten([h | t], tail) do
+    [h | flatten(t, tail)]
   end
 end
