@@ -16,7 +16,28 @@ defmodule Change do
   """
 
   @spec generate(integer, list) :: {:ok, map} | :error
+  def generate(_, []), do: :error
   def generate(amount, values) do
+    change = values
+    |> Enum.sort
+    |> Enum.reverse
+    |> divide_into(amount)
+    if (Enum.empty?(change)) do
+      :error
+    else
+      {:ok, change}
+    end
+  end
 
+  defp divide_into(coins, amount, change \\ %{})
+  defp divide_into([], 0, change), do: change
+  defp divide_into([], _amount, _change), do: %{}
+  defp divide_into([coin | [sm | []]], amt, chg) when rem(amt, coin) < sm do
+    divide_into([sm | []], amt, Map.put(chg, coin, 0))
+  end
+  defp divide_into([coin | rest], amount, change) do
+    num = div(amount, coin)
+    change = Map.put(change, coin, num)
+    divide_into(rest, amount - (num * coin), change)
   end
 end
