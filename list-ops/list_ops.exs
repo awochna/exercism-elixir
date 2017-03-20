@@ -44,18 +44,20 @@ defmodule ListOps do
   end
 
   @spec append(list, list) :: list
-  def append([], []), do: []
-  def append([], [head | tail]) do
-    [head | append([], tail)]
-  end
-  def append([head | tail], b) do
-    [head | append(tail, b)]
+  def append([], b), do: b
+  def append(a, []), do: a
+  def append(a, b) do
+    a
+    |> reverse
+    |> reduce(b, &([&1 | &2]))
   end
 
   @spec concat([[any]]) :: [any]
-  def concat(ll, new \\ [])
+  def concat(ll) do
+    concat(reverse(ll), [])
+  end
   def concat([], new), do: new
   def concat([head | tail], new) do
-    concat(tail, append(new, head))
+    concat(tail, append(head, new))
   end
 end
