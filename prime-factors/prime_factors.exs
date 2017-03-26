@@ -21,6 +21,10 @@ defmodule PrimeFactors do
     factor_out(div(number, current), [current | acc], current)
   end
   defp factor_out(number, acc, current) do
-    factor_out(number, acc, current + 1)
+    if (current * current > number) do
+      [number | acc]
+    else
+      factor_out(number, acc, current + 1)
+    end
   end
 end
