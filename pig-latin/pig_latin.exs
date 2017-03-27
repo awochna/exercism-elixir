@@ -1,4 +1,9 @@
 defmodule PigLatin do
+  @vowels ["a", "e", "i", "o", "u"]
+  @vowel_clusters ["xr", "yt"]
+  @double_clusters ["ch", "sh", "qu", "sq", "th"]
+  @triple_clusters ["thr", "sch", "squ"]
+
   @doc """
   Given a `phrase`, translate it a word at a time to Pig Latin.
 
@@ -15,6 +20,28 @@ defmodule PigLatin do
   """
   @spec translate(phrase :: String.t()) :: String.t()
   def translate(phrase) do
+    phrase
+    |> String.split
+    |> Enum.map(&translate_word/1)
+    |> Enum.join(" ")
+  end
+
+  defp translate_word(word) do
+    cond do
+      String.starts_with?(word, @vowels) ->
+        word <> "ay"
+      String.starts_with?(word, @vowel_clusters) ->
+        word <> "ay"
+      String.starts_with?(word, @triple_clusters) ->
+        {cluster, rest} = String.split_at(word, 3)
+        rest <> cluster <> "ay"
+      String.starts_with?(word, @double_clusters) ->
+        {cluster, rest} = String.split_at(word, 2)
+        rest <> cluster <> "ay"
+      true ->
+        {first, rest} = String.split_at(word, 1)
+        rest <> first <> "ay"
+    end
   end
 end
 
