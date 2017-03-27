@@ -13,7 +13,7 @@ defmodule CryptoSquareTest do
     assert CryptoSquare.encode("") == ""
   end
 
-  @tag :pending
+  # @tag :pending
   test "perfect square" do
     assert CryptoSquare.encode("abcd") == "ac bd"
   end
