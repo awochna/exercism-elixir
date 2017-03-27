@@ -12,7 +12,7 @@ defmodule CryptoSquare do
     str = str
     |> String.downcase
     |> String.graphemes
-    |> Enum.filter(&(Regex.match?(~r/[a-z]/, &1)))
+    |> Enum.filter(&(Regex.match?(~r/[1-9a-z]/, &1)))
     num_rows = rows(length(str))
     str
     |> Enum.chunk(num_rows, num_rows, List.duplicate([" "], num_rows))
@@ -20,10 +20,17 @@ defmodule CryptoSquare do
     |> Enum.intersperse(" ")
     |> List.flatten
     |> List.to_string
+    |> String.replace("  ", " ")
+    |> String.trim
   end
 
   defp rows(size) do
-    round(:math.sqrt(size)) - 1
+    root = :math.sqrt(size)
+    if (round(root) != root) do
+      round(root) + 1
+    else
+      round(root)
+    end
   end
 
   defp rotate_matrix(rows, columns \\ []) do
