@@ -8,18 +8,22 @@ defmodule Palindromes do
     range = Range.new(min_factor, max_factor)
     Range.new(min_factor * min_factor, max_factor * max_factor)
     |> Enum.filter(&palindrome?/1)
-    |> Enum.map(fn(palindrome) ->
-      factors = Enum.filter(range, fn(factor) ->
-        rem(palindrome, factor) == 0 && div(palindrome, factor) in range
-      end)
-      if Enum.empty?(factors) do
-        {}
-      else
-        {palindrome, other_factors(factors, palindrome)}
-      end
-    end)
-    |> Enum.reject(fn(tuple) -> tuple_size(tuple) == 0 end)
+    |> Enum.map(&(find_factors(&1, range)))
+    |> Enum.reject(&empty?/1)
     |> Enum.into(%{})
+  end
+
+  defp empty?(tuple), do: tuple_size(tuple) == 1
+
+  defp find_factors(palindrome, range) do
+    factors = Enum.filter(range, fn(factor) ->
+      rem(palindrome, factor) == 0 && div(palindrome, factor) in range
+    end)
+    if Enum.empty?(factors) do
+      {palindrome}
+    else
+      {palindrome, other_factors(factors, palindrome)}
+    end
   end
 
   defp other_factors(factors, palindrome) do
