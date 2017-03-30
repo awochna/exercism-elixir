@@ -5,7 +5,7 @@ defmodule Triplet do
   """
   @spec sum([non_neg_integer]) :: non_neg_integer
   def sum(triplet) do
-
+    Enum.reduce(triplet, &(&1 + &2))
   end
 
   @doc """
@@ -13,7 +13,7 @@ defmodule Triplet do
   """
   @spec product([non_neg_integer]) :: non_neg_integer
   def product(triplet) do
-
+    Enum.reduce(triplet, &(&1 * &2))
   end
 
   @doc """
@@ -21,7 +21,7 @@ defmodule Triplet do
   """
   @spec pythagorean?([non_neg_integer]) :: boolean
   def pythagorean?([a, b, c]) do
-
+    a * a + b * b == c * c
   end
 
   @doc """
@@ -29,7 +29,9 @@ defmodule Triplet do
   """
   @spec generate(non_neg_integer, non_neg_integer) :: [list(non_neg_integer)]
   def generate(min, max) do
-
+    Range.new(min + 1, max)
+    |> Enum.map(&(find_a_b(&1, min)))
+    |> Enum.reject(&Enum.empty?/1)
   end
 
   @doc """
@@ -37,5 +39,31 @@ defmodule Triplet do
   """
   @spec generate(non_neg_integer, non_neg_integer, non_neg_integer) :: [list(non_neg_integer)]
   def generate(min, max, sum) do
+    generate(min, max)
+    |> Enum.filter(&(sum(&1) == sum))
+    |> Enum.reverse
+  end
+
+  defp find_a_b(c, min) do
+    b = find_b_given_c(c, min)
+    a = find_a_given_b_c(b, c, min)
+    if a == nil || b == nil do
+      []
+    else
+      [a, b, c]
+    end
+  end
+
+  defp find_b_given_c(c, min) do
+    Enum.find(Range.new(min, c - 1), fn(b) ->
+      find_a_given_b_c(b, c, min)
+    end)
+  end
+
+  defp find_a_given_b_c(nil, _c, _min), do: nil
+  defp find_a_given_b_c(b, c, min) do
+    Enum.find(Range.new(min, b - 1), fn(a) ->
+      pythagorean?([a, b, c])
+    end)
   end
 end
